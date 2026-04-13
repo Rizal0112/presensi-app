@@ -87,7 +87,8 @@
 
   // Your web app's Firebase configuration
   import { getFirestore } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
-	const firebaseConfig = {
+  import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+  const firebaseConfig = {
     apiKey: "AIzaSyDzCK1hF39bYcx16sc0hCoCfUOdhqtzeVo",
     authDomain: "presensi-app-aabb9.firebaseapp.com",
     projectId: "presensi-app-aabb9",
@@ -99,6 +100,49 @@
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+
+  document.getElementById("formData").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const nama = document.getElementById("Nama").value;
+    const niu = document.getElementById("NIU").value;
+    const kelas = document.getElementById("Kelas").value;
+
+    await addDoc(collection(db, "presensi"), {
+        nama,
+        niu,
+        kelas,
+        waktu: new Date().toLocaleString(),
+        poin: 0
+    });
+
+    alert("Data berhasil disimpan 🔥");
+    location.reload();
+});
+
+// 5. LOAD DATA (STEP 8)
+async function loadData() {
+    const querySnapshot = await getDocs(collection(db, "presensi"));
+    const table = document.getElementById("dataTable");
+
+    table.innerHTML = "";
+
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+
+        table.innerHTML += `
+        <tr>
+            <td>${data.nama}</td>
+            <td>${data.niu}</td>
+            <td>${data.kelas}</td>
+            <td>${data.waktu}</td>
+            <td>${data.poin}</td>
+            <td>-</td>
+        </tr>`;
+    });
+}
+
+loadData();
 </script>
 </body>
 </html>
