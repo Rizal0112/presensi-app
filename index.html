@@ -194,7 +194,20 @@ function hitungPoin(kelas, waktuSubmit) {
     if (selisih < 1440) return -15;
     return "-50%";
 }
+window.hapusSemua = async function() {
+    if (confirm("Yakin mau hapus semua data?")) {
+        const querySnapshot = await getDocs(collection(db, "presensi"));
 
+        const promises = querySnapshot.docs.map((docSnap) => {
+            return deleteDoc(doc(db, "presensi", docSnap.id));
+        });
+
+        await Promise.all(promises);
+
+        alert("Semua data berhasil dihapus!");
+        loadData(); // 
+    }
+}
 loadData();
 </script>
 </body>
