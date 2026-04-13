@@ -277,6 +277,11 @@ function renderPagination() {
         ? 1
         : Math.ceil(currentData.length / rowsPerPage);
 
+    if (totalPages <= 1) {
+        pagination.innerHTML = "";
+        return;
+    }
+
     for (let i = 1; i <= totalPages; i++) {
         pagination.innerHTML += `
             <button onclick="goToPage(${i})"
