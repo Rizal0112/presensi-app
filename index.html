@@ -88,7 +88,9 @@ window.logout = function() {
     localStorage.removeItem("userEmail");
     window.location.href = "login.html";
 }
+
 let semuaData = [];
+let currentData = [];
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
   // TODO: Add SDKs for Firebase products that you want to use
@@ -96,7 +98,7 @@ let semuaData = [];
 
   // Your web app's Firebase configuration
  import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
-  const firebaseConfig = {
+ const firebaseConfig = {
     apiKey: "AIzaSyDzCK1hF39bYcx16sc0hCoCfUOdhqtzeVo",
     authDomain: "presensi-app-aabb9.firebaseapp.com",
     projectId: "presensi-app-aabb9",
@@ -135,16 +137,16 @@ function initRealtime() {
     const table = document.getElementById("dataTable");
 
     onSnapshot(collection(db, "presensi"), (snapshot) => {
-        semuaData = [];
+	semuaData = [];
 
-        snapshot.forEach((docSnap) => {
-            semuaData.push({
-                id: docSnap.id,
-                ...docSnap.data()
-            });
-        });
+	snapshot.forEach((docSnap) => {
+    	semuaData.push({
+        	id: docSnap.id,
+        	...docSnap.data()
+    });
+});
 
-        renderTable(); // tampilkan
+renderTable();
     });
 }
 // DELETE
@@ -210,42 +212,60 @@ initRealtime();
 
 
 function renderTable() {
-    const table = document.getElementById("dataTable");
+    let table = document.getElementById("dataTable");
+    table.innerHTML = "";
 
     const keyword = document.getElementById("searchInput").value.toLowerCase();
     const kelasFilter = document.getElementById("filterKelas").value;
     const tanggalFilter = document.getElementById("filterTanggal").value;
 
-    table.innerHTML = "";
-
-    semuaData.forEach((data) => {
+    // 🔥 FILTER DATA
+    currentData = semuaData.filter((item) => {
 
         if (
             keyword &&
-            !data.nama.toLowerCase().includes(keyword) &&
-            !String(data.niu).toLowerCase().includes(keyword) &&
-            !data.kelas.toLowerCase().includes(keyword)
-        ) return;
+            !item.nama.toLowerCase().includes(keyword) &&
+            !String(item.niu).toLowerCase().includes(keyword) &&
+            !item.kelas.toLowerCase().includes(keyword)
+        ) return false;
 
-        if (kelasFilter && data.kelas !== kelasFilter) return;
+        if (kelasFilter && item.kelas !== kelasFilter) return false;
 
         if (tanggalFilter) {
-            const tanggalData = new Date(data.waktu).toISOString().split("T")[0];
-            if (tanggalData !== tanggalFilter) return;
+            const tanggalData = new Date(item.waktu).toISOString().split("T")[0];
+            if (tanggalData !== tanggalFilter) return false;
         }
 
-        table.innerHTML += `
-        <tr>
-            <td>${data.nama}</td>
-            <td>${data.niu}</td>
-            <td>${data.kelas}</td>
-            <td>${data.waktu}</td>
-            <td>${data.poin}</td>
-            <td>
-                <button onclick="hapusData('${data.id}')">❌</button>
-            </td>
-        </tr>`;
+        return true;
     });
+
+    // 🔥 PAGINATION
+    let start = (currentPage - 1) * rowsPerPage;
+    let end = rowsPerPage === "all" ? currentData.length : start + rowsPerPage;
+
+    let paginatedData = rowsPerPage === "all"
+        ? currentData
+        : currentData.slice(start, end);
+
+    paginatedData.forEach((item, index) => {
+        let realIndex = start + index;
+
+        let row = `
+            <tr>
+                <td>${item.nama}</td>
+                <td>${item.niu}</td>
+                <td>${item.kelas}</td>
+                <td>${item.waktu}</td>
+                <td>${item.poin}</td>
+                <td>
+                    <button onclick="hapusData('${item.id}')">❌</button>
+                </td>
+            </tr>
+        `;
+        table.innerHTML += row;
+    });
+
+    renderPagination();
 }
 document.getElementById("searchInput").addEventListener("input", renderTable);
 document.getElementById("filterKelas").addEventListener("change", renderTable);
