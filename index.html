@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presensi & Pengumpulan Laporan</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <button class="btn-logout-fixed" onclick="logout()">Logout</button>
+
+    <h2>Presensi Pengumpulan Laporan</h2>
+
+    <form id="formData">
+        <div class="input-group">
+            <input type="text" id="Nama" required>
+            <label>Nama</label>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="NIU" required>
+            <label>NIU</label>
+        </div>
+
+        <div class="input-group">
+            <select id="Kelas" required>
+                <option value="" disabled selected hidden></option>
+                <option>Fisika</option>
+                <option>Geofisika</option>
+                <option>IUP Physics</option>
+            </select>
+            <label>Kelas</label>
+        </div>
+
+        <button type="submit">Kirim</button>
+    </form>
+<h3>Data Terkumpul</h3>
+
+<div class="table-wrapper">
+
+    <div class="filter-container">
+        <input type="text" id="searchInput" placeholder="🔍 Cari Nama / NIU / Kelas...">
+
+        <select id="filterKelas">
+            <option value="">Semua Kelas</option>
+            <option>Fisika</option>
+            <option>Geofisika</option>
+            <option>IUP Physics</option>
+        </select>
+
+        <input type="date" id="filterTanggal">
+
+        <select id="rowsPerPage">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="all">Semua</option>
+        </select>
+
+        <button class="btn-excel" onclick="downloadExcel()">⬇ Excel</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th onclick="sortTable('Nama')">Nama</th>
+                <th onclick="sortTable('NIU')">NIU</th>
+                <th onclick="sortTable('Kelas')">Kelas</th>
+                <th onclick="sortTable('Waktu')">Waktu</th>
+                <th onclick="sortTable('Poin')">Poin</th>
+                <th>Aksi</th>
+	</tr>
+        </thead>
+        <tbody id="dataTable"></tbody>
+    </table>
+    <div id="pagination" class="pagination"></div>
+<button class="btn-hapus-semua" onclick="hapusSemua()">
+    🗑 Hapus Semua
+</button>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
