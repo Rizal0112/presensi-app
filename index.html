@@ -89,7 +89,8 @@ window.logout = function() {
     localStorage.removeItem("userEmail");
     window.location.href = "login.html";
 }
-
+let sortField = null;
+let sortAsc = true;
 let semuaData = [];
 let currentData = [];
 
@@ -115,6 +116,27 @@ let rowsPerPage = 10;
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+window.sortTable = function(field) {
+
+    const map = {
+        "Nama": "nama",
+        "NIU": "niu",
+        "Kelas": "kelas",
+        "Waktu": "waktu",
+        "Poin": "poin"
+    };
+
+    let key = map[field];
+
+    if (sortField === key) {
+        sortAsc = !sortAsc;
+    } else {
+        sortField = key;
+        sortAsc = true;
+    }
+
+    renderTable(); // ❗ TANPA sort di sini
+};
 // SUBMIT
 document.getElementById("formData").addEventListener("submit", async function(e) {
     e.preventDefault();
@@ -242,7 +264,23 @@ function renderTable() {
 
         return true;
     });
+	if (sortField) {
+    currentData.sort((a, b) => {
+        let valA = a[sortField];
+        let valB = b[sortField];
 
+        if (!isNaN(valA) && !isNaN(valB)) {
+            return sortAsc ? valA - valB : valB - valA;
+        }
+
+        valA = String(valA).toLowerCase();
+        valB = String(valB).toLowerCase();
+
+        if (valA < valB) return sortAsc ? -1 : 1;
+        if (valA > valB) return sortAsc ? 1 : -1;
+        return 0;
+    });
+}
     // 🔥 PAGINATION
     let start = (currentPage - 1) * rowsPerPage;
     let end = rowsPerPage === "all" ? currentData.length : start + rowsPerPage;
