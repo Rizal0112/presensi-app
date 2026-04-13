@@ -365,15 +365,3 @@ td button:hover {
     transform: scale(1.05);
 }
 
-.btn-refresh {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 8px;
-    background: #4CAF50;
-    color: white;
-    cursor: pointer;
-}
-
-.btn-refresh:hover {
-    background: #45a049;
-}
