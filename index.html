@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Presensi Pengumpulan Laporan</title>
 <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
-
 <div class="container">
     <button class="btn-logout-fixed" onclick="logout()">Logout</button>
 
@@ -88,6 +88,7 @@ window.logout = function() {
     localStorage.removeItem("userEmail");
     window.location.href = "login.html";
 }
+let semuaData = [];
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
   // TODO: Add SDKs for Firebase products that you want to use
@@ -130,31 +131,22 @@ document.getElementById("formData").reset(); // ✅ ini
 }); // ✅ WAJIB ADA INI
 
 // LOAD DATA
-function loadData() {
+function initRealtime() {
     const table = document.getElementById("dataTable");
-	table.innerHTML = "<tr><td colspan='6'>Loading...</td></tr>";
 
     onSnapshot(collection(db, "presensi"), (snapshot) => {
-        table.innerHTML = "";
+        semuaData = [];
 
         snapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-
-            table.innerHTML += `
-            <tr>
-                <td>${data.nama}</td>
-                <td>${data.niu}</td>
-                <td>${data.kelas}</td>
-                <td>${data.waktu}</td>
-                <td>${data.poin}</td>
-                <td>
-                    <button onclick="hapusData('${docSnap.id}')">❌</button>
-                </td>
-            </tr>`;
+            semuaData.push({
+                id: docSnap.id,
+                ...docSnap.data()
+            });
         });
+
+        renderTable(); // tampilkan
     });
 }
-
 // DELETE
 window.hapusData = async function(id) {
     await deleteDoc(doc(db, "presensi", id));
@@ -214,7 +206,50 @@ window.hapusSemua = async function() {
         alert("Semua data berhasil dihapus!");
     }
 }
-loadData();
+initRealtime();
+
+
+function renderTable() {
+    const table = document.getElementById("dataTable");
+
+    const keyword = document.getElementById("searchInput").value.toLowerCase();
+    const kelasFilter = document.getElementById("filterKelas").value;
+    const tanggalFilter = document.getElementById("filterTanggal").value;
+
+    table.innerHTML = "";
+
+    semuaData.forEach((data) => {
+
+        if (
+            keyword &&
+            !data.nama.toLowerCase().includes(keyword) &&
+            !String(data.niu).toLowerCase().includes(keyword) &&
+            !data.kelas.toLowerCase().includes(keyword)
+        ) return;
+
+        if (kelasFilter && data.kelas !== kelasFilter) return;
+
+        if (tanggalFilter) {
+            const tanggalData = new Date(data.waktu).toISOString().split("T")[0];
+            if (tanggalData !== tanggalFilter) return;
+        }
+
+        table.innerHTML += `
+        <tr>
+            <td>${data.nama}</td>
+            <td>${data.niu}</td>
+            <td>${data.kelas}</td>
+            <td>${data.waktu}</td>
+            <td>${data.poin}</td>
+            <td>
+                <button onclick="hapusData('${data.id}')">❌</button>
+            </td>
+        </tr>`;
+    });
+}
+document.getElementById("searchInput").addEventListener("input", renderTable);
+document.getElementById("filterKelas").addEventListener("change", renderTable);
+document.getElementById("filterTanggal").addEventListener("change", renderTable);
 </script>
 </body>
 </html>
