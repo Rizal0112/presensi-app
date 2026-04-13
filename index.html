@@ -299,6 +299,11 @@ window.goToPage = function(page) {
 document.getElementById("searchInput").addEventListener("input", renderTable);
 document.getElementById("filterKelas").addEventListener("change", renderTable);
 document.getElementById("filterTanggal").addEventListener("change", renderTable);
+document.getElementById("rowsPerPage").addEventListener("change", function() {
+    rowsPerPage = this.value === "all" ? "all" : parseInt(this.value);
+    currentPage = 1; // reset ke halaman pertama
+    renderTable();
+});
 </script>
 </body>
 </html>
