@@ -249,26 +249,47 @@ function renderTable() {
     let paginatedData = rowsPerPage === "all"
         ? currentData
         : currentData.slice(start, end);
+// 🔥 RENDER TABLE
+paginatedData.forEach((item, index) => {
+    let row = `
+        <tr>
+            <td>${item.nama}</td>
+            <td>${item.niu}</td>
+            <td>${item.kelas}</td>
+            <td>${item.waktu}</td>
+            <td>${item.poin}</td>
+            <td>
+                <button onclick="hapusData('${item.id}')">❌</button>
+            </td>
+        </tr>
+    `;
+    table.innerHTML += row;
+});
 
-    paginatedData.forEach((item, index) => {
-        let realIndex = start + index;
+// 🔥 PANGGIL PAGINATION
+renderPagination();
+}
+function renderPagination() {
+    const pagination = document.getElementById("pagination");
+    pagination.innerHTML = "";
 
-        let row = `
-            <tr>
-                <td>${item.nama}</td>
-                <td>${item.niu}</td>
-                <td>${item.kelas}</td>
-                <td>${item.waktu}</td>
-                <td>${item.poin}</td>
-                <td>
-                    <button onclick="hapusData('${item.id}')">❌</button>
-                </td>
-            </tr>
+    const totalPages = rowsPerPage === "all"
+        ? 1
+        : Math.ceil(currentData.length / rowsPerPage);
+
+    for (let i = 1; i <= totalPages; i++) {
+        pagination.innerHTML += `
+            <button onclick="goToPage(${i})"
+                class="${i === currentPage ? 'active' : ''}">
+                ${i}
+            </button>
         `;
-        table.innerHTML += row;
-    });
+    }
+}
 
-    renderPagination();
+window.goToPage = function(page) {
+    currentPage = page;
+    renderTable();
 }
 document.getElementById("searchInput").addEventListener("input", renderTable);
 document.getElementById("filterKelas").addEventListener("change", renderTable);
