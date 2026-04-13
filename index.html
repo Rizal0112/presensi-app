@@ -126,7 +126,7 @@ document.getElementById("formData").addEventListener("submit", async function(e)
         waktu: waktu.toLocaleString(),
         poin
     });
-
+document.getElementById("formData").reset(); // ✅ ini
 }); // ✅ WAJIB ADA INI
 
 // LOAD DATA
