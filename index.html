@@ -152,15 +152,7 @@ document.getElementById("formData").addEventListener("submit", async function(e)
         nama,
         niu,
         kelas,
-        waktu: waktu.toLocaleString("en-US", {
-    	hour: "2-digit",
-    	minute: "2-digit",
-    	second: "2-digit",
-    	year: "numeric",
-    	month: "2-digit",
-    	day: "2-digit",
-    	hour12: true
-}),
+        waktu: waktu.toLocaleString(),
         poin
     });
 document.getElementById("formData").reset(); // ✅ ini
